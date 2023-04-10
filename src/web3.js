@@ -6,6 +6,7 @@ import Big from 'minterjs-util/src/big.js';
 import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, NATIVE_COIN_ADDRESS, NETWORK_DATA} from './config.js';
 import erc20ABI from './abi/erc20.js';
 import hubABI from './abi/hub.js';
+import wethAbi from './abi/weth.js';
 
 
 export const web3Utils = Utils;
@@ -32,8 +33,6 @@ export function AbiMethodEncoder(abi) {
         return contract.methods[method](...args).encodeABI();
     };
 }
-/** @deprecated */
-export const AbiEncoder = AbiMethodEncoder;
 
 const WEI_DECIMALS = 18;
 /**
@@ -169,9 +168,27 @@ export function getAllowance(chainId, tokenContractAddress, accountAddress, spen
 }
 
 /**
+ * @param {ChainId} chainId
+ * @param {string} amount - in wei
+ * @return {EvmTxParams}
+ */
+export function buildWethUnwrap(chainId, amount) {
+    const wethContractAddress = getWrappedNativeContractAddress(chainId);
+    if (!wethContractAddress) {
+        throw new Error('Invalid chainId');
+    }
+    const data = AbiMethodEncoder(wethAbi)('withdraw', amount);
+    return {
+        to: wethContractAddress,
+        data,
+        value: 0,
+    }
+}
+
+/**
  * @param {string} tokenContractAddress
  * @param {string} spenderContractAddress
- * @param {string|number|undefined} [amount]
+ * @param {string|number|undefined} [amount] - in wei
  * @return {EvmTxParams}
  */
 export function buildApproveTx(tokenContractAddress, spenderContractAddress, amount) {
@@ -360,10 +377,10 @@ export function getHubDestinationChainBytes(chain = 'minter') {
 
 /**
  * return WETH/WBNB address
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {string|void}
  */
-function getWrappedNativeContractAddress(chainId) {
+export function getWrappedNativeContractAddress(chainId) {
     return NETWORK_DATA[chainId]?.wrappedNativeContractAddress;
 }
 
@@ -374,8 +391,7 @@ function getWrappedNativeContractAddress(chainId) {
 export function fixNativeContractAddress(chainId, tokenContractAddress) {
     tokenContractAddress = tokenContractAddress?.toLowerCase();
     const isNativeToken = tokenContractAddress === '0x0000000000000000000000000000000000000000'
-        || tokenContractAddress === NATIVE_COIN_ADDRESS
-        || tokenContractAddress === getWrappedNativeContractAddress(chainId);
+        || tokenContractAddress === NATIVE_COIN_ADDRESS;
 
     if (isNativeToken) {
         return NATIVE_COIN_ADDRESS;

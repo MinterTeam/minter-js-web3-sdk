@@ -3,7 +3,7 @@ import {watchDebounced} from '@vueuse/core';
 import Big from 'minterjs-util/src/big.js';
 import {wait} from '@shrpne/utils/src/wait.js';
 import {SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS, BSC_CHAIN_ID} from '../config.js';
-import {toErcDecimals, fromErcDecimals, getFeeAmount} from '../web3.js';
+import {toErcDecimals, fromErcDecimals, getFeeAmount, buildWethUnwrap, getWrappedNativeContractAddress} from '../web3.js';
 // import {ParaSwapSwapSide} from '../api/swap-paraswap-models.d.ts';
 // import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '../api/swap-paraswap.js';
 import {buildTxForSwap as buildTxForZeroExSwap, getEstimationLimit as getZeroExEstimationLimit} from '../api/swap-0x.js';
@@ -56,6 +56,12 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
     });
 
 
+    const isGasTokenWrappedNative = computed(() => {
+        return props.gasTokenAddress?.toLowerCase() === getWrappedNativeContractAddress(props.chainId)
+    });
+    const isGasTokenNativeLike = computed(() => {
+        return isGasTokenWrappedNative.value || props.gasTokenAddress?.toLowerCase() === NATIVE_COIN_ADDRESS;
+    })
     // in gwei
     const gasPrice = computed(() => {
         if (props.chainId === BSC_CHAIN_ID) {
@@ -79,7 +85,7 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
     function getCombinedTxGasLimit(complexity = 1) {
         const baseRewardGasLimit = RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT;
         const createRewardGasLimit = sw.isSmartWalletExists.value ? 0 : RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT;
-        const gasSwapRewardGasLimit = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? 0 : RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
+        const gasSwapRewardGasLimit = isGasTokenNativeLike.value ? 0 : RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
         const swapRewardGasLimit = complexity * RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
         return baseRewardGasLimit + createRewardGasLimit + gasSwapRewardGasLimit + swapRewardGasLimit;
     }
@@ -98,7 +104,7 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
         const swapSingle = RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
         const baseRewardPart = new Big(baseSingle).div(oldGasLimit);
         const createRewardPart = sw.isSmartWalletExists.value ? new Big(0) : new Big(createSingle).div(oldGasLimit);
-        const gasSwapRewardPart = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? new Big(0) : new Big(gasSwapSingle).div(oldGasLimit);
+        const gasSwapRewardPart = isGasTokenNativeLike.value ? new Big(0) : new Big(gasSwapSingle).div(oldGasLimit);
         const swapRewardPart = new Big(swapSingle).div(oldGasLimit);
 
         const baseReward = baseRewardPart.times(oldEstimation);
@@ -218,7 +224,7 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
      * @return {Promise<string|number>}
      */
     function estimateSpendLimitForRelayReward() {
-        if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
+        if (isGasTokenNativeLike.value) {
             return Promise.resolve(relayRewardAmount.value);
         } else {
             return getZeroExEstimationLimit(props.chainId, swapToRelayRewardParams.value)
@@ -233,14 +239,23 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
      * @return {Promise<ParaSwapTransactionsBuildCombined>}
      */
     function _buildTxForRelayReward() {
-        if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
+        if (isGasTokenNativeLike.value) {
+            /** @type {Array<EvmTxParams>} */
+            let txList = [];
+            const relayRewardAmountWei = toErcDecimals(relayRewardAmount.value, 18);
+            // unwrap
+            if (isGasTokenWrappedNative.value) {
+                txList.push(buildWethUnwrap(props.chainId, relayRewardAmountWei));
+            }
+            // send
+            txList.push({
+                to: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
+                value: relayRewardAmountWei,
+                data: '0x',
+            });
             return Promise.resolve({
                 swapLimit: relayRewardAmount.value,
-                txList: [{
-                    to: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
-                    value: toErcDecimals(relayRewardAmount.value, 18),
-                    data: '0x',
-                }],
+                txList,
             });
         } else {
             return buildTxForZeroExSwap(props.chainId, swapToRelayRewardParams.value)

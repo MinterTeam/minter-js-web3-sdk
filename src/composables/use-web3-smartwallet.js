@@ -1,7 +1,7 @@
 import {reactive, computed, toRefs} from 'vue-demi';
 import {watchDebounced} from '@vueuse/core';
 import {SMART_WALLET_FACTORY_CONTRACT_ADDRESS, SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS} from '../config.js';
-import {web3Utils, web3Abi, AbiEncoder, getProviderByChain} from '../web3.js';
+import {web3Utils, web3Abi, AbiMethodEncoder, getProviderByChain} from '../web3.js';
 import {submitRelayTx} from '../api/smart-wallet-relay.js';
 import smartWalletABI from '../abi/smartwallet.js';
 import smartWalletBin from '../abi/smartwallet-bin.js';
@@ -114,13 +114,13 @@ export default function useWeb3SmartWallet() {
 
         if (!props.isLegacy) {
             callDestination = SMART_WALLET_FACTORY_CONTRACT_ADDRESS;
-            callPayload = AbiEncoder(smartWalletFactoryABI)('call', props.evmAccountAddress, walletIndex, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
+            callPayload = AbiMethodEncoder(smartWalletFactoryABI)('call', props.evmAccountAddress, walletIndex, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
         } else if (walletExists || props.extraNonce > 0) {
             callDestination = smartWalletAddress.value;
             callPayload = smartWalletContract.methods.call(txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s).encodeABI();
         } else {
             callDestination = SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS;
-            callPayload = AbiEncoder(smartWalletFactoryABILegacy)('createAndCall', props.evmAccountAddress, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
+            callPayload = AbiMethodEncoder(smartWalletFactoryABILegacy)('createAndCall', props.evmAccountAddress, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
         }
         console.log('to', txToList);
         console.log('data', txDataList);

@@ -1,6 +1,6 @@
 {
   "name": "minter-js-web3-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "JS Web3 SDK for Minter Blockchain",
   "type": "module",
   "exports": {
@@ -40,7 +40,7 @@
   "dependencies": {
     "@shrpne/utils": "^0.0.1",
     "@vueuse/core": "^9.13.0",
-    "axios": "^1.3.4",
+    "axios": "^1.3.5",
     "axios-extensions": "^3.1.6",
     "axios-prevent-concurrency": "^0.0.3",
     "camelcase-keys": "^8.0.2",
@@ -60,7 +60,7 @@
     "replace-in-file": "^6.3.5",
     "swagger-typescript-api": "^12.0.4",
     "tsd-jsdoc": "^2.5.0",
-    "typescript": "^5.0.3",
+    "typescript": "^5.0.4",
     "vue": "^2.7.0"
   }
 }

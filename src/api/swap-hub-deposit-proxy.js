@@ -4,7 +4,7 @@ import {HUB_DEPOSIT_PROXY_API_URL, HUB_DEPOSIT_PROXY_ETHEREUM_CONTRACT_ADDRESS, 
 import addToCamelInterceptor from '../utils/axios-to-camel.js';
 import preventConcurrencyAdapter from 'axios-prevent-concurrency';
 import {buildTxForSwap as buildOneInchTx, prepareProtocolsCached} from '../api/swap-1inch.js';
-import {AbiEncoder, addApproveTx, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '../web3.js';
+import {AbiMethodEncoder, addApproveTx, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '../web3.js';
 import hubProxyAbi from '../abi/hub-proxy.js';
 import {getDefaultAdapter} from '../utils/axios-default-adapter.js';
 
@@ -62,7 +62,7 @@ export async function buildSwapWithApproveTxList(chainId, swapParams, {idPrevent
                 fromTokenAmount = 0;
             }
 
-            const data = AbiEncoder(hubProxyAbi)('callAndTransferToChain',
+            const data = AbiMethodEncoder(hubProxyAbi)('callAndTransferToChain',
                 oneInchResponse.tx.to,
                 oneInchResponse.tx.data,
                 fromToken,
