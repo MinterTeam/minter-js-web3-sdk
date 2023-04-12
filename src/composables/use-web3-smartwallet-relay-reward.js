@@ -199,7 +199,10 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
                 .catch((error) => {
                     setAmountEstimationLimitForRelayReward(0);
                     state.isEstimationLimitForRelayRewardsLoading = false;
-                    state.estimationLimitForRelayRewardsError = getErrorText(error);
+                    const isZeroExLiquidityError = error.response?.data.validationErrors?.[0]?.reason === 'INSUFFICIENT_ASSET_LIQUIDITY'
+                    state.estimationLimitForRelayRewardsError = isZeroExLiquidityError
+                        ? 'Unable to swap token for relay reward: no liquidity pools with it or too low liquidity'
+                        : getErrorText(error);
                 });
         } else {
             setAmountEstimationLimitForRelayReward(0);
