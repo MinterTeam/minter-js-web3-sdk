@@ -1,6 +1,6 @@
 {
   "name": "minter-js-web3-sdk",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "JS Web3 SDK for Minter Blockchain",
   "type": "module",
   "exports": {

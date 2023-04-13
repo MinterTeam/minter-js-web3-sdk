@@ -310,7 +310,7 @@ export async function addApproveTx(tokenContractAddress, tokenAmount, targetTx, 
         const allowance = canCheckAllowance
             ? await getAllowance(chainIdForAllowanceCheck, tokenContractAddress, accountAddressForAllowanceCheck, spenderContractAddress)
             : 0;
-        if (allowance && new Big(allowance).lt(tokenAmount)) {
+        if (!allowance || new Big(allowance).lt(tokenAmount)) {
             approveTx = buildApproveTx(tokenContractAddress, spenderContractAddress, approveInfinite ? undefined : tokenAmount);
         }
     }
