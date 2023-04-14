@@ -2,7 +2,7 @@ import {reactive, computed, watch, watchEffect, toRefs} from 'vue-demi';
 import {watchDebounced} from '@vueuse/core';
 import Big from 'minterjs-util/src/big.js';
 import {NATIVE_COIN_ADDRESS} from '../config.js';
-import {fromErcDecimals, toErcDecimals, buildDepositWithApproveTxList, fixNativeContractAddress} from '../web3.js';
+import {fromErcDecimals, toErcDecimals, buildDepositWithApproveTxList, fixNativeContractAddress, fixWrappedNativeContractAddress} from '../web3.js';
 import {buildSwapWithApproveTxList as buildSwapWithApproveTxListOneInch} from '../api/swap-1inch.js';
 import {buildSwapWithApproveTxList as buildSwapWithApproveTxListHub} from '../api/swap-hub-deposit-proxy.js';
 import {getErrorText} from '../utils/server-error.js';
@@ -74,12 +74,15 @@ export default function useWeb3SmartWalletSwap() {
     const tokenToBuyDecimals = computed(() => {
         return props.tokenToBuyDecimals;
     });
+    // must consider wrapped as NOT native
     const isNativeToken = computed(() => {
         return tokenToSellAddress.value === NATIVE_COIN_ADDRESS;
     });
     // deposit without swap
     const isDepositOnlyMode = computed(() => {
-        return tokenToSellAddress.value === tokenToBuyAddress.value;
+        // check if tokens are same
+        // must consider native coin and wrapped native token as same to eliminate swap and reduce 'complexity' of relay-reward
+        return fixWrappedNativeContractAddress(props.chainId, tokenToSellAddress.value) === fixWrappedNativeContractAddress(props.chainId, tokenToBuyAddress.value);
     });
 
     watchEffect(() => setSmartWalletProps({
@@ -212,7 +215,9 @@ export default function useWeb3SmartWalletSwap() {
     });
 
     function isValidSwapToHubParams() {
-        const sameTokens = swapToHubParams.value.fromTokenAddress === swapToHubParams.value.toTokenAddress;
+        const sameTokens = isDepositOnlyMode.value;
+        // consider avoid using swapToHubParams, since they depend on swap provider schema (1inch, 0x, paraswap, uniswap etc)
+        // const hasProps = tokenToSellAddress.value && tokenToBuyAddress.value && Number(amountToSpendForDeposit.value) > 0;
         const hasProps = swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && Number(swapToHubParams.value.amount) > 0;
 
         return hasProps && !sameTokens;

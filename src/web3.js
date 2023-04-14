@@ -399,3 +399,18 @@ export function fixNativeContractAddress(chainId, tokenContractAddress) {
         return tokenContractAddress;
     }
 }
+
+/**
+ * @param {ChainId} chainId
+ * @param {string} tokenContractAddress
+ */
+export function fixWrappedNativeContractAddress(chainId, tokenContractAddress) {
+    tokenContractAddress = tokenContractAddress?.toLowerCase();
+    const isWrappedNativeToken = tokenContractAddress === getWrappedNativeContractAddress(chainId);
+
+    if (isWrappedNativeToken) {
+        return NATIVE_COIN_ADDRESS;
+    } else {
+        return fixNativeContractAddress(chainId, tokenContractAddress);
+    }
+}
