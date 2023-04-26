@@ -209,7 +209,7 @@ export default function useWeb3SmartWallet() {
  * @param {number} [options.walletIndex]
  * @return {string}
  */
-function getSmartWalletAddress(evmAccountAddress, {isLegacy, walletIndex = SMART_WALLET_INDEX} = {}) {
+export function getSmartWalletAddress(evmAccountAddress, {isLegacy, walletIndex = SMART_WALLET_INDEX} = {}) {
     if (!evmAccountAddress) {
         return '';
     }
