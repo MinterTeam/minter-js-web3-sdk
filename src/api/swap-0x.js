@@ -2,7 +2,7 @@ import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import Big from 'minterjs-util/src/big.js';
 import {getMaxEstimationLimit, getMinEstimationLimit} from 'minterjs-util/src/swap-limit.js';
-import {NATIVE_COIN_ADDRESS, ZERO_EX_ETHEREUM_API_URL, ZERO_EX_BSC_API_URL} from '../config.js';
+import {config, NATIVE_COIN_ADDRESS, ZERO_EX_ETHEREUM_API_URL, ZERO_EX_BSC_API_URL} from '../config.js';
 import {buildApproveTx, getAllowance} from '../web3.js';
 import {getDefaultAdapter} from '../utils/axios-default-adapter.js';
 
@@ -34,6 +34,9 @@ function _buildTxForSwap(chainId, swapParams) {
     return instance.get('swap/v1/quote', {
         baseURL: ZERO_EX_API_URL_LIST[chainId],
         params: swapParams,
+        headers: {
+            '0x-api-key': config.ZERO_EX_API_KEY,
+        },
     })
         .then((response) => {
             return response.data;
@@ -99,6 +102,9 @@ function getPrice(chainId, swapParams) {
             baseURL: ZERO_EX_API_URL_LIST[chainId],
             params: swapParams,
             cache: fastCache,
+            headers: {
+                '0x-api-key': config.ZERO_EX_API_KEY,
+            },
         })
         .then((response) => {
             return response.data;

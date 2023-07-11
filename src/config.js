@@ -1,3 +1,14 @@
+export const config = {
+    ZERO_EX_API_KEY: '',
+};
+
+/**
+ * @param {Partial<config>} configValue
+ */
+export function setConfig(configValue) {
+    Object.assign(config, configValue);
+}
+
 export const MAINNET = 'mainnet';
 export const TESTNET = 'testnet';
 export const NETWORK = true /*process.env.APP_ENV === MAINNET*/ ? MAINNET : TESTNET;
