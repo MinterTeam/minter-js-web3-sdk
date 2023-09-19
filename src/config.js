@@ -19,7 +19,7 @@ export const HUB_MINTER_MULTISIG_ADDRESS = 'Mx68f4839d7f32831b9234f9575f3b95e1af
 export const HUB_API_URL = 'https://hub-api.minter.network/';
 export const HUB_DEPOSIT_PROXY_API_URL = HUB_API_URL + 'deposit-proxy/';
 export const SMART_WALLET_RELAY_API_URL = HUB_API_URL + 'smart-wallet-relay/';
-export const ETHEREUM_API_URL = 'https://mainnet.infura.io/v3/0ab122c0f98043eda95266a862528e4c';
+export const ETHEREUM_API_URL = 'https://rpc.ankr.com/eth';
 export const BSC_API_URL = 'https://rpc.ankr.com/bsc/';
 /** @type {ChainId} */
 export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
