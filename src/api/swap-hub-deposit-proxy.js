@@ -55,6 +55,7 @@ export async function buildSwapWithApproveTxList(chainId, swapParams, {idPrevent
             const destination = getHubDestinationAddressBytes(swapParams.destination);
 
             let fromToken = oneInchResponse.fromToken.address.toLowerCase();
+            /** @type {string|number} */
             let fromTokenAmount = oneInchResponse.fromTokenAmount;
 
             if (fromToken === NATIVE_COIN_ADDRESS) {

@@ -1,17 +1,25 @@
 {
   "name": "minter-js-web3-sdk",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "JS Web3 SDK for Minter Blockchain",
   "type": "module",
   "exports": {
-    "./*": "./*"
+    "./*": {
+      "default": "./*",
+      "types": "./types/*"
+    }
   },
   "files": [
     "/src/",
-    "/dist/"
+    "/dist/",
+    "/types/"
   ],
+  "types": "./types/types.d.ts",
   "scripts": {
-    "tsc": "tsc --project tsconfig.json",
+    "tsc:check": "tsc --project tsconfig.json",
+    "tsc:dts": "npm run tsc:modules || npm run tsc:legacy",
+    "tsc:modules": "tsc --project tsconfig.json --noEmit false --declaration --emitDeclarationOnly --declarationDir types",
+    "tsc:legacy": "tsc --project tsconfig.json --noEmit false --declaration --emitDeclarationOnly --outFile types/types.d.ts",
     "jsdoc-to-dts": "jsdoc -c jsdoc.config.json .",
     "dts": "dts-generator --project . --out types/types.d.ts",
     "swagger": "npm run swagger:modules && npm run swagger:global",
@@ -22,6 +30,7 @@
     "swagger:paraswap": "swagger-typescript-api -p 'https://api.swaggerhub.com/apis/paraswapv5/api/1.0' --no-client --extract-request-params --type-prefix ParaSwap -o src/api -n ${npm_config_file_name:=swap-paraswap-models.d.ts}",
     "swagger:global-1inch": "npm run swagger:1inch --file-name=swap-1inch-models-global.d.ts -- --templates ./tmp/sta/",
     "swagger:global-paraswap": "npm run swagger:paraswap --file-name=swap-paraswap-models-global.d.ts -- --templates ./tmp/sta/",
+    "prepublishOnly": "npm run tsc:dts",
     "precommit": "echo 'Pre-commit checks...' && npm run lint"
   },
   "pre-commit": [
@@ -38,9 +47,9 @@
   "bugs": "https://github.com/MinterTeam/minter-js-web3-sdk/issues",
   "homepage": "https://github.com/MinterTeam/minter-js-web3-sdk#readme",
   "dependencies": {
-    "@shrpne/utils": "^0.0.1",
-    "@vueuse/core": "^9.13.0",
-    "axios": "^1.4.0",
+    "@shrpne/utils": "^0.0.4",
+    "@vueuse/core": "^10.4.1",
+    "axios": "^1.5.0",
     "axios-extensions": "^3.1.7",
     "axios-prevent-concurrency": "^0.0.3",
     "camelcase-keys": "^8.0.2",
@@ -60,7 +69,7 @@
     "replace-in-file": "^6.3.5",
     "swagger-typescript-api": "^12.0.4",
     "tsd-jsdoc": "^2.5.0",
-    "typescript": "^5.1.3",
+    "typescript": "^5.2.2",
     "vue": "^2.7.14"
   }
 }

@@ -60,7 +60,7 @@ export function toErcDecimals(balance, ercDecimals = 18) {
 }
 
 /**
- * @typedef {import('web3-core/types/index').Transaction & import('web3-core/types/index').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
+ * @typedef {import('web3-core').Transaction & import('web3-core').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
  */
 
 

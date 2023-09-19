@@ -138,7 +138,3 @@ export const HUB_WITHDRAW_SPEED = {
     FAST: 'fast',
 };
 
-
-/**
- * @typedef {number} ChainId
- */

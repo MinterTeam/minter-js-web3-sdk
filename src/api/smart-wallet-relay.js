@@ -7,6 +7,8 @@ import {NETWORK_DATA, SMART_WALLET_RELAY_API_URL} from "../config.js";
 import {getDefaultAdapter} from '../utils/axios-default-adapter.js';
 import addToCamelInterceptor from '../utils/axios-to-camel.js';
 
+/** @typedef {import('@shrpne/utils/src/cancelable-signal.js').CancelableSignal} CancelableSignal*/
+
 
 const instance = axios.create({
     baseURL: SMART_WALLET_RELAY_API_URL,
