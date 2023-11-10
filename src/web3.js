@@ -3,7 +3,7 @@ import Utils from 'web3-utils';
 import Contract from 'web3-eth-contract';
 import AbiCoder from 'web3-eth-abi';
 import Big from 'minterjs-util/src/big.js';
-import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, NATIVE_COIN_ADDRESS, NETWORK_DATA} from './config.js';
+import {ETHEREUM_API_URL, BSC_API_URL, METAGARDEN_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, METAGARDEN_CHAIN_ID, NATIVE_COIN_ADDRESS, NETWORK_DATA} from './config.js';
 import erc20ABI from './abi/erc20.js';
 import hubABI from './abi/hub.js';
 import wethAbi from './abi/weth.js';
@@ -14,12 +14,13 @@ export const web3Utils = Utils;
 export const web3Eth = new Eth(ETHEREUM_API_URL);
 export const web3EthEth = new Eth(ETHEREUM_API_URL);
 export const web3EthBsc = new Eth(BSC_API_URL);
+export const web3EthMetagarden = new Eth(METAGARDEN_API_URL);
 export const web3Abi = AbiCoder;
 
 
 
 const transactionPollingInterval = 5000;
-[web3Eth, web3EthEth, web3EthBsc]
+[web3Eth, web3EthEth, web3EthBsc, web3EthMetagarden]
     .forEach((eth) => eth.transactionPollingInterval = transactionPollingInterval);
 
 /**
@@ -346,6 +347,9 @@ export function getProviderByChain(chainId) {
     }
     if (chainId === BSC_CHAIN_ID) {
         return web3EthBsc;
+    }
+    if (chainId === METAGARDEN_CHAIN_ID) {
+        return web3EthMetagarden;
     }
 }
 

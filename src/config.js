@@ -21,10 +21,13 @@ export const HUB_DEPOSIT_PROXY_API_URL = HUB_API_URL + 'deposit-proxy/';
 export const SMART_WALLET_RELAY_API_URL = HUB_API_URL + 'smart-wallet-relay/';
 export const ETHEREUM_API_URL = 'https://rpc.ankr.com/eth';
 export const BSC_API_URL = 'https://rpc.ankr.com/bsc/';
+export const METAGARDEN_API_URL = 'https://rpc.metagarden.io';
 /** @type {ChainId} */
 export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
 /** @type {ChainId} */
 export const BSC_CHAIN_ID = NETWORK === MAINNET ? 56 : 97;
+/** @type {ChainId} */
+export const METAGARDEN_CHAIN_ID = NETWORK === MAINNET ? 9999 : 3333;
 
 export const ONE_INCH_API_URL = 'https://api.1inch.io/v5.0/';
 export const PARASWAP_API_URL = 'https://apiv5.paraswap.io/';
