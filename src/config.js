@@ -29,7 +29,7 @@ export const BSC_CHAIN_ID = NETWORK === MAINNET ? 56 : 97;
 /** @type {ChainId} */
 export const METAGARDEN_CHAIN_ID = NETWORK === MAINNET ? 9999 : 3333;
 
-export const ONE_INCH_API_URL = 'https://api.1inch.io/v5.0/';
+export const ONE_INCH_API_URL = 'https://api.1inch.dev/swap/v5.0/';
 export const PARASWAP_API_URL = 'https://apiv5.paraswap.io/';
 export const ZERO_EX_ETHEREUM_API_URL = 'https://api.0x.org/';
 export const ZERO_EX_BSC_API_URL = 'https://bsc.api.0x.org/';
