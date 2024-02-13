@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {ONE_INCH_API_URL, NETWORK, MAINNET, NATIVE_COIN_ADDRESS} from '../config.js';
 import preventConcurrencyAdapter from 'axios-prevent-concurrency';
 import {fromErcDecimals, addApproveTx} from '../web3.js';
@@ -127,15 +128,19 @@ export function prepareProtocols(chainId) {
 
 /**
  * @param {number|string} chainId
+ * @param {boolean} [enableCoolDown=true] - 1inch api has 1rps limit
  * @returns {Promise<string|undefined>}
  */
-export function prepareProtocolsCached(chainId) {
+export function prepareProtocolsCached(chainId, enableCoolDown = true) {
     if (fetchedProtocols[chainId]) {
         return Promise.resolve(fetchedProtocols[chainId]);
     } else {
         return prepareProtocols(chainId)
             .then((protocols) => {
                 fetchedProtocols[chainId] = protocols;
+                if (enableCoolDown) {
+                    return wait(1000, protocols);
+                }
                 return protocols;
             })
             .catch((error) => {
