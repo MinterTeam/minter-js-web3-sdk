@@ -14,9 +14,6 @@ const adapter = (($ = getDefaultAdapter()) => {
 const instance = axios.create({
     baseURL: ONE_INCH_API_URL,
     adapter,
-    headers: {
-        Authorization: 'Bearer 6qiKdCnmmne8lqIEE3SNMGR0opX1yz2J',
-    },
 });
 
 const fastCache = new Cache({ttl: 2 * 1000, max: 100});
