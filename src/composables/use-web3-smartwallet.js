@@ -15,6 +15,9 @@ const SMART_WALLET_INDEX = 0;
 
 export default function useWeb3SmartWallet() {
     const props = reactive({
+        /** @type {string|function(string): {v: string, r: string, s: string}} - sign fn or privateKey for signing */
+        signer: '',
+        /** @deprecated - use 'signer' instead */
         privateKey: '',
         evmAccountAddress: '',
         walletIndex: SMART_WALLET_INDEX,
@@ -107,7 +110,9 @@ export default function useWeb3SmartWallet() {
             ["address", "uint256", "address[]", "bytes[]", "uint256[]", "uint256"],
             [smartWalletAddress.value, finalNonce, txToList, txDataList, txValueList, timeout],
         ));
-        let sign = web3Eth.accounts.sign(msg, props.privateKey);
+        const signer = props.signer || props.privateKey;
+        const signFn = typeof signer === 'function' ? signer : (msg) => web3Eth.accounts.sign(msg, signer);
+        let sign = signFn(msg);
 
         let callDestination;
         let callPayload;

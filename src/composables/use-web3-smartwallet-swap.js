@@ -27,7 +27,9 @@ export default function useWeb3SmartWalletSwap() {
     } = useWeb3SmartWalletWithRelayReward();
 
     const props = reactive({
-        // privateKey of control address
+        /** @type {string|function(string): {v: string, r: string, s: string}} - sign fn or privateKey for signing by control address */
+        signer: '',
+        /** @deprecated - use 'signer' instead */
         privateKey: '',
         // control address of smart-wallet
         evmAccountAddress: '',
@@ -86,6 +88,7 @@ export default function useWeb3SmartWalletSwap() {
     });
 
     watchEffect(() => setSmartWalletProps({
+        signer: props.signer,
         privateKey: props.privateKey,
         evmAccountAddress: props.evmAccountAddress,
         extraNonce: props.extraNonce,
